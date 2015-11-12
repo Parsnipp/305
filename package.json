@@ -1,0 +1,24 @@
+{
+  "name": "recipes",
+  "version": "0.0.1",
+  "description": "Recipe book API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "/specs/API-spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Parsnipp/305.git"
+  },
+  "keywords": [
+    "api",
+    "restify",
+    "recipes"
+  ],
+  "author": "Callum White",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Parsnipp/305/issues"
+  },
+  "homepage": "https://github.com/Parsnipp/305#readme"
+}
