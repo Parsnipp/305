@@ -4,7 +4,7 @@
   "description": "Recipe book API.",
   "main": "index.js",
   "scripts": {
-    "test": "/specs/API-spec.js"
+    "test": "./specs/API-spec.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/Parsnipp/305/issues"
   },
-  "homepage": "https://github.com/Parsnipp/305#readme"
+  "homepage": "https://github.com/Parsnipp/305#readme",
+  "dependencies": {
+    "jasmine-node": "^1.14.5"
+  }
 }
