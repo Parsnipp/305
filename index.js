@@ -6,13 +6,24 @@ server.use(restify.fullResponse());
 server.use(restify.bodyParser());
 server.use(restify.authorizationParser());
 
-var recipes = require('./modules/recipes');
+var recipes = require('./modules/recipes.js');
 
 server.get('/', function(req, res, next) {
   res.redirect('/recipes', next);
 });
 
-server.get('/modules/recipes', function(req, res) {
+server.get('/recipes/remote/:name', function(req, res) {
+	console.log('getting recipes by name');
+
+	const name = req.params.name;
+	const data = recipes.getByName(name);
+
+	res.setHeader('content-type', 'application/json');
+  res.send(data.code, data.response);
+  res.end();
+});
+
+server.get('/recipes', function(req, res) {
   console.log('getting a list of all recipes');
 
   const host = req.headers.host;
@@ -31,7 +42,7 @@ server.get('/modules/recipes', function(req, res) {
   res.end();
 });
 
-server.get('/modules/recipes:recipeID', function(req, res) {
+server.get('/recipes/:recipeID', function(req, res) {
   console.log("getting a recipe based on it's ID");
 
   const recipeID = req.params.recipeID;
@@ -42,7 +53,7 @@ server.get('/modules/recipes:recipeID', function(req, res) {
   res.end();
 });
 
-server.post('/modules/recipes:recipeID', function(req, res) {
+server.post('/recipes', function(req, res) {
   console.log('adding recipe to saved recipes');
 
   const body = req.body;
@@ -55,7 +66,7 @@ server.post('/modules/recipes:recipeID', function(req, res) {
   res.end();
 });
 
-server.put('/modules/recipes:recipeID', function(req, res) {
+server.put('/recipes/:recipeID', function(req, res) {
   console.log('updating a recipe');
 
   const recipeID = req.params.recipeID;
@@ -67,14 +78,13 @@ server.put('/modules/recipes:recipeID', function(req, res) {
   res.end();
 });
 
-server.del('/modules/recipes:recipeID', function(req, res) {
+server.del('/recipes/:recipeID', function(req, res) {
   console.log('deleting recipe from saved recipes');
 
   const recipeID = req.params.recipeID;
   const auth = req.authorization;
   const data = recipes.delByID(recipeID, auth);
 
-  res.setHeader('content-type', data.contentType);
   res.send(data.code, data.response);
   res.end();
 });

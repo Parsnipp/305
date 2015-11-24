@@ -43,6 +43,21 @@ exports.getByID = function(recipeID) {
   return {code:406, response:{status:'error', contentType:'application/json', message:'recipe not found', data: recipeID}};
 }
 
+exports.getByName = function(name) {
+  console.log('searchByName: '+name);
+
+  var url = 'http://';
+  var res = sync('GET', url);
+  var returned = res.getBody();
+  var data = [];
+
+  for(var i=0; i < returned.length(); i++) {
+    data.push(JSON.parse(returned[i].toString('utf8')));
+  }
+
+  return data;
+}
+
 exports.getAll = function(host) {
   console.log('getAll');
 
@@ -101,7 +116,7 @@ exports.addNew = function(auth, body) {
     return {code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }};
   }
 
-  const json = body;
+  const json = JSON.parse(body);
   const valid = validateJson(json);
 
   if (valid === false) {
@@ -133,7 +148,9 @@ exports.delByID = function(recipeID, auth) {
   for(var i=0; i < recipes.length; i++) {
     if (recipes[i].id === recipeID) {
       recipes.splice(i, 1);
-      if (recipes[i].id != recipeID) {
+      if (recipes.length == 0) {
+        return {code:200, response:{status:'success', contentType:'application/json', message:'recipe deleted'}};
+      } else if (recipes[i].id != recipeID) {
         return {code:200, response:{status:'success', contentType:'application/json', message:'recipe deleted'}};
       } else {
         return {code: 401, contentType:'application/json', response:{ status:'error', message:'failed to delete' }};
@@ -142,7 +159,7 @@ exports.delByID = function(recipeID, auth) {
   }  
 }
 
-exports.update = function(recipeID, auth) {
+exports.update = function(recipeID, body, auth) {
   console.log('update');
 
   if (auth.basic === undefined) {
@@ -172,4 +189,6 @@ exports.update = function(recipeID, auth) {
       return {code: 201, contentType:'application/json', response:{ status:'success', message:'new recipe added', data: newRecipe }};
     }
   }
+
+  return {code: 400 ,contentType:'application/json', response:{ status:'error', message:'JSON data missing in request body' }};
 }
