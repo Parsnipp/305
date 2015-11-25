@@ -1,7 +1,9 @@
 var rand = require('csprng');
 var builder = require('xmlbuilder');
+var sync = require('sync-request');
 
 var recipes = [];
+var BASEURL = 'http://api.yummly.com/v1/api/recipes?_app_id=f6752399&_app_key=f4805fe510935a98a2bda86abcc28be1&q=';
 
 function validateJson(json) {
 
@@ -43,19 +45,32 @@ exports.getByID = function(recipeID) {
   return {code:406, response:{status:'error', contentType:'application/json', message:'recipe not found', data: recipeID}};
 }
 
-exports.getByName = function(name) {
+exports.getByName = function(host, name) {
   console.log('searchByName: '+name);
 
-  var url = 'http://';
+  var url = BASEURL + name;
   var res = sync('GET', url);
-  var returned = res.getBody();
+  var returned = JSON.parse(res.getBody().toString('UTF-8'));
+  var returned = returned.matches
+
+  for (var i = 0; i < returned.length; i++) {
+    
+    recipes.push(returned[i]);
+  };
+
   var data = [];
 
-  for(var i=0; i < returned.length(); i++) {
-    data.push(JSON.parse(returned[i].toString('utf8')));
+  if (returned.length === 0) {
+
+    return {code: 404, contentType:'application/json', response:{ status:'error', message:'no recipes found' }};
   }
 
-  return data;
+  var notes = returned.map(function(item) {
+
+    return {name: item.name, link: 'http://'+host+'/recipes/'+item.id};
+  });
+
+  return {code:200, contentType:'application/json', response:{status:'success', message:returned.length+' recipes found', data: notes}};
 }
 
 exports.getAll = function(host) {

@@ -16,7 +16,8 @@ server.get('/recipes/remote/:name', function(req, res) {
 	console.log('getting recipes by name');
 
 	const name = req.params.name;
-	const data = recipes.getByName(name);
+	const host = req.headers.host;
+	const data = recipes.getByName(host, name);
 
 	res.setHeader('content-type', 'application/json');
   res.send(data.code, data.response);

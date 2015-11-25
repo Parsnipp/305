@@ -46,4 +46,9 @@ describe('Recipes', function() {
 		var expectation = recipe.delByID(itemID[4], auth);
 		expect(expectation.code).toEqual(200);
 	});
+
+	it('should get recipes from third party API', function() {
+		var expectation = recipe.getByName('localhost:8080', 'pasta');
+		expect(expectation.code).toEqual(200);
+	});
 });
