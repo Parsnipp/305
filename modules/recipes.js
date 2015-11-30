@@ -1,6 +1,7 @@
 var rand = require('csprng');
 var builder = require('xmlbuilder');
 var sync = require('sync-request');
+var db = require('./database_handler.js');
 
 var recipes = [];
 var BASEURL = 'http://api.yummly.com/v1/api/recipes?_app_id=f6752399&_app_key=f4805fe510935a98a2bda86abcc28be1&q=';
