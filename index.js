@@ -30,17 +30,16 @@ server.get('/recipes', function(req, res) {
   const host = req.headers.host;
   console.log(host);
 
-  var data, type;
-
   if (req.header('Accept') === 'application/xml') {
     data = recipes.getAllXML(host);
   } else {
-    data = recipes.getAll(host);
+  	console.log('getting JSON');
+    recipes.getAll(host, returned => {
+    	res.setHeader('content-type', returned.contentType);
+		  res.send(returned.code, returned.response);
+		  res.end();
+    });
   }
-
-  res.setHeader('content-type', data.contentType);
-  res.send(data.code, data.response);
-  res.end();
 });
 
 server.get('/recipes/:recipeID', function(req, res) {
@@ -60,11 +59,13 @@ server.post('/recipes', function(req, res) {
   const body = req.body;
   const auth = req.authorization;
 
-  console.log(auth);
-  const data = recipes.addNew(auth, body);
-  res.setHeader('content-type', data.contentType);
-  res.send(data.code, data.response);
-  res.end();
+  recipes.addNew(auth, body, data => {
+  	console.log(data);
+
+	  res.setHeader('content-type', data.contentType);
+	  res.send(data.code, data.response);
+	  res.end();
+  });
 });
 
 server.put('/recipes/:recipeID', function(req, res) {
@@ -73,6 +74,8 @@ server.put('/recipes/:recipeID', function(req, res) {
   const recipeID = req.params.recipeID;
   const auth = req.authorization;
   const data = recipes.update(recipeID, auth);
+
+  console.log(data);
 
   res.setHeader('content-type', data.contentType);
   res.send(data.code, data.response);

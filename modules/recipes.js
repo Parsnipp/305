@@ -3,7 +3,6 @@ var builder = require('xmlbuilder');
 var sync = require('sync-request');
 var db = require('./database_handler.js');
 
-var recipes = [];
 var BASEURL = 'http://api.yummly.com/v1/api/recipes?_app_id=f6752399&_app_key=f4805fe510935a98a2bda86abcc28be1&q=';
 
 function validateJson(json) {
@@ -66,7 +65,7 @@ exports.getByName = function(host, name) {
     return {code: 404, contentType:'application/json', response:{ status:'error', message:'no recipes found' }};
   }
 
-  var notes = returned.map(function(item) {
+  var recipe = returned.map(function(item) {
 
     return {name: item.name, link: 'http://'+host+'/recipes/'+item.id};
   });
@@ -74,20 +73,22 @@ exports.getByName = function(host, name) {
   return {code:200, contentType:'application/json', response:{status:'success', message:returned.length+' recipes found', data: notes}};
 }
 
-exports.getAll = function(host) {
+exports.getAll = (host, callback) => {
   console.log('getAll');
 
-  if (recipes.length === 0) {
+  db.getAllDB(data => {
+    if (data.length === 0) {
 
-    return {code: 404, contentType:'application/json', response:{ status:'error', message:'no recipes found' }};
-  }
+      callback({code: 404, contentType:'application/json', response:{ status:'error', message:'no recipes found' }});
+    }
 
-  var notes = recipes.map(function(item) {
+    var recipe = data.map(function(item) {
 
-    return {name: item.name, link: 'http://'+host+'/recipes/'+item.id};
+      return {name: item.name, link: 'http://'+host+'/recipes/'+item.id};
+    });
+
+    callback({code:200, contentType:'application/json', response:{status:'success', message:data.length+' recipes found', data: data}});
   });
-
-  return {code:200, contentType:'application/json', response:{status:'success', message:recipes.length+' recipes found', data: notes}};
 }
 
 exports.getAllXML = function(host) {
@@ -119,17 +120,17 @@ exports.getAllXML = function(host) {
   return {code: 200, contentType:'application/xml', response: xml};
 }
 
-exports.addNew = function(auth, body) {
+exports.addNew = (auth, body, callback) => {
   console.log('addNew');
 
   if (auth.basic === undefined) {
 
-    return {code: 401, contentType:'application/json', response:{ status:'error', message:'missing basic auth' }};
+    callback({code: 401, contentType:'application/json', response:{ status:'error', message:'missing basic auth' }});
   }
 
   if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
 
-    return {code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }};
+    callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
   }
 
   const json = JSON.parse(body);
@@ -137,15 +138,24 @@ exports.addNew = function(auth, body) {
 
   if (valid === false) {
 
-    return {code: 400 ,contentType:'application/json', response:{ status:'error', message:'JSON data missing in request body' }};
+    callback({code: 400, contentType:'application/json', response:{ status:'error', message:'JSON data missing in request body' }});
   }
 
   const newId = rand(160, 36);
   const newRecipe = {id: newId, name:  json.name, ingredients: json.ingredients, directions: json.directions};
 
-  recipes.push(newRecipe);
+  db.postDB(newRecipe, data => {
+    console.log(data);
+    var response = data.split(':');
 
-  return {code: 201, contentType:'application/json', response:{ status:'success', message:'new recipe added', data: newRecipe }};
+    if (response[0] == 'added') {
+
+      callback({code: 201, contentType:'application/json', response:{ status:'success', message:response[1]+' added', data: newRecipe }});
+    } else {
+
+      callback({code: 400, contentType:'application/json', response:{ status:'error', message:'error: ' + response[1] }});
+    }
+  });
 }
 
 exports.delByID = function(recipeID, auth) {
@@ -165,10 +175,13 @@ exports.delByID = function(recipeID, auth) {
     if (recipes[i].id === recipeID) {
       recipes.splice(i, 1);
       if (recipes.length == 0) {
+
         return {code:200, response:{status:'success', contentType:'application/json', message:'recipe deleted'}};
       } else if (recipes[i].id != recipeID) {
+
         return {code:200, response:{status:'success', contentType:'application/json', message:'recipe deleted'}};
       } else {
+
         return {code: 401, contentType:'application/json', response:{ status:'error', message:'failed to delete' }};
       }
     }
