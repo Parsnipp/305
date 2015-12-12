@@ -1,4 +1,5 @@
 /*istanbul ignore next*/
+const remote = require('../modules/remote.js');
 const create = require('../crud/create.js');
 const read = require('../crud/read.js');
 const update = require('../crud/update.js');
@@ -70,12 +71,12 @@ describe('Recipes', done => {
 		});
 	});
 
-	// it('should get recipes from third party API', done => {
-	// 	read.byName('localhost:8080', 'pasta', expectation => {
-	// 		expect(expectation.code).toEqual(200);
-	// 		done();
-	// 	});
-	// });
+	it('should get recipes from third party API', done => {
+		remote.search('localhost:8080', 'pasta', expectation => {
+			expect(expectation.code).toEqual(200);
+			done();
+		});
+	});
 
 	it('should update the user account', done => {
 		const user = {username: 'testuser', password: 'password'};

@@ -5,6 +5,7 @@ server.use(restify.fullResponse());
 server.use(restify.bodyParser());
 server.use(restify.authorizationParser());
 
+const remote = require('./modules/remote.js');
 const create = require('./crud/create.js');
 const read = require('./crud/read.js');
 const update = require('./crud/update.js');
@@ -15,17 +16,26 @@ server.get('/', (req, res, next) => {
   res.redirect('/recipes', next);
 });
 
-server.get('/recipes/remote/:name', (req, res) => {
+server.get('/recipes/search/:name', (req, res) => {
 	console.log('getting recipes by name');
 
 	const name = req.params.name;
 	const host = req.headers.host;
-	read.byName(host, name, data => {
+	remote.search(host, name, data => {
 
 		res.setHeader('content-type', 'application/json');
 	  res.send(data.code, data.response);
 	  res.end();
   });
+});
+
+server.get('/recipes/remote/:recipeID', (req, res) => {
+	remote.single(host, id, data => {
+
+		res.setHeader('content-type', 'application/json');
+	  res.send(data.code, data.response);
+	  res.end();
+	});
 });
 
 server.get('/recipes', (req, res) => {
