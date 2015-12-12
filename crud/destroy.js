@@ -1,4 +1,5 @@
 const db = require('../data/database_handler.js');
+const account = require('../users/account_handler.js');
 
 exports.byID = (recipeID, auth, callback) => {
   console.log('delByID');
@@ -8,10 +9,16 @@ exports.byID = (recipeID, auth, callback) => {
     callback({code: 401, contentType:'application/json', response:{ status:'error', message:'missing basic auth' }});
   }
 
-  if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
+  var attempt = {username: auth.basic.username, password: auth.basic.password};
 
-    callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
-  }
+  account.login(attempt, data => {
+    console.log(data);
+    var response = data.split(':');
+
+    if (response[0] === 'error') {
+      return callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
+    };
+  });
 
   db.deleteFromDB(recipeID, data => {
     var response = data.split(':');

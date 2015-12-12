@@ -5,17 +5,17 @@ server.use(restify.fullResponse());
 server.use(restify.bodyParser());
 server.use(restify.authorizationParser());
 
-const recipes = require('./modules/recipes.js');
 const create = require('./crud/create.js');
 const read = require('./crud/read.js');
 const update = require('./crud/update.js');
 const destroy = require('./crud/destroy.js');
+const account = require('./users/account_handler.js');
 
-server.get('/', function(req, res, next) {
+server.get('/', (req, res, next) => {
   res.redirect('/recipes', next);
 });
 
-server.get('/recipes/remote/:name', function(req, res) {
+server.get('/recipes/remote/:name', (req, res) => {
 	console.log('getting recipes by name');
 
 	const name = req.params.name;
@@ -28,7 +28,7 @@ server.get('/recipes/remote/:name', function(req, res) {
   });
 });
 
-server.get('/recipes', function(req, res) {
+server.get('/recipes', (req, res) => {
   console.log('getting a list of all recipes');
 
   const host = req.headers.host;
@@ -50,7 +50,7 @@ server.get('/recipes', function(req, res) {
   }
 });
 
-server.get('/recipes/:recipeID', function(req, res) {
+server.get('/recipes/:recipeID', (req, res) => {
   console.log("getting a recipe based on it's ID");
 
   const recipeID = req.params.recipeID;
@@ -62,7 +62,7 @@ server.get('/recipes/:recipeID', function(req, res) {
   });
 });
 
-server.post('/recipes', function(req, res) {
+server.post('/recipes', (req, res) => {
   console.log('adding recipe to saved recipes');
 
   const body = req.body;
@@ -77,7 +77,7 @@ server.post('/recipes', function(req, res) {
   });
 });
 
-server.put('/recipes/:recipeID', function(req, res) {
+server.put('/recipes/:recipeID', (req, res) => {
   console.log('updating a recipe');
 
   const recipeID = req.params.recipeID;
@@ -91,7 +91,7 @@ server.put('/recipes/:recipeID', function(req, res) {
   });
 });
 
-server.del('/recipes/:recipeID', function(req, res) {
+server.del('/recipes/:recipeID', (req, res) => {
   console.log('deleting recipe from saved recipes');
 
   const recipeID = req.params.recipeID;
@@ -103,11 +103,83 @@ server.del('/recipes/:recipeID', function(req, res) {
   });
 });
 
+server.get('/user', (req, res) => {
+	const auth = req.authorization;
+	const details = { username: auth.basic.username, password: auth.basic.password};
+	account.login(details, data => {
+		const message = data.split(':');
+		if (message[0] === 'error') {
+			var code = 401;
+			var response = { status:'error', message:'invalid credentials' };
+		} else {
+			var code = 200;
+			var response = { status: 'success', message: 'credentials accepted'};
+		};
+
+		res.send(code, response);
+		res.end();
+	});
+});
+
+server.post('/user', (req, res) => {
+	const auth = req.authorization;
+	const details = { username: auth.basic.username, password: auth.basic.password};
+	account.create(details, data => {
+		const message = data.split(':');
+		if (message[0] === 'error') {
+			var code = 401;
+			var response = { status:'error', message:'invalid credentials' };
+		} else {
+			var code = 201;
+			var response = { status: 'success', message: 'account created'};
+		};
+
+		res.send(code, response);
+		res.end();
+	});
+});
+
+server.put('/user', (req, res) => {
+	const auth = req.authorization;
+	const details = { username: auth.basic.username, password: auth.basic.password};
+	account.update(details, data => {
+		const message = data.split(':');
+		if (message[0] === 'error') {
+			var code = 401;
+			var response = { status:'error', message:'invalid credentials' };
+		} else {
+			var code = 201;
+			var response = { status: 'success', message: 'account updated'};
+		};
+
+		res.send(code, response);
+		res.end();
+	});
+});
+
+server.del('/user', (req, res) => {
+	const auth = req.authorization;
+	const details = { username: auth.basic.username, password: auth.basic.password};
+	account.delete(details, data => {
+		const message = data.split(':');
+		if (message[0] === 'error') {
+			var code = 401;
+			var response = { status:'error', message:'invalid credentials' };
+		} else {
+			var code = 200;
+			var response = { status: 'success', message: 'account deleted'};
+		};
+
+		res.send(code, response);
+		res.end();
+	});
+});
+
 var port = process.env.PORT || 8080;
-server.listen(port, function (err) {
+server.listen(port, err => {
   if (err) {
-	console.error(err);
+		console.error(err);
   } else {
-	console.log('Serving on port: ' + port);
+		console.log('Serving on port: ' + port);
   }
 });

@@ -1,4 +1,4 @@
-exports.json(json) {
+exports.json = function(json) {
 
   if (typeof json.name !== 'string') {
     console.log('name not a string');

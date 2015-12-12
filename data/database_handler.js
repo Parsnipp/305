@@ -1,12 +1,12 @@
 /*istanbul ignore next*/
-var mongoose = require('mongoose');
+var mongoose = require('./recipes_connect.js');
 var database = 'recipes';
 
-const server = 'mongodb://localhost/'+database;
+// const server = 'mongodb://localhost/'+database;
 
-console.log(server);
-mongoose.connect(server);
-const db = mongoose.connection;
+// console.log(server);
+// mongoose.connect(server);
+// const db = mongoose.connection;
 
 const recipeSchema = new mongoose.Schema({
 	_id: { type: String, required: true },
@@ -20,7 +20,7 @@ const Recipe = mongoose.model('Recipe', recipeSchema);
 exports.getAllDB = callback => {
 	Recipe.find( (err, data) => {
     if (err) {
-
+      console.log('error');
       return callback('error: '+err);
     };
 
@@ -56,17 +56,12 @@ exports.getByNameDB = (name, callback) => {
 };
 
 exports.postDB = (data, callback) => {
-	const id = data.id;
-  const name = data.name;
-  const ing = data.ingredients;
-  const ingredients = ing.toString().split(',').map(function(item) {
+  var ingredients = data.ingredients.toString().split(',').map(function(item) {
 
     return item.trim();
   });
-
-  const directions = data.directions;
   
-  const newRecipe = new Recipe({ _id: id, name: name, ingredients: ingredients, directions: directions });
+  var newRecipe = new Recipe({ _id: data.id, name: data.name, ingredients: ingredients, directions: data.directions });
 
 	newRecipe.save( (err, newRecipe) => {
     if (err) {
@@ -79,33 +74,14 @@ exports.postDB = (data, callback) => {
 };
 
 exports.putDB = (data, callback) => {
-	Recipe.remove({_id: data.id}, err => {
+  Recipe.update({_id: data.id}, {_id: data.id, name: data.name, ingredients: data.ingredients, directions: data.directions}, (err, data) => {
     if (err) {
 
       return callback('error: '+err);
     };
 
-		const id = data.id;
-	  const name = data.name;
-	  const ing = data.ingredients;
-	  const ingredients = ing.toString().split(',').map(function(item) {
-
-	    return item.trim();
-	  });
-
-	  const directions = data.directions;
-	  
-	  const newRecipe = new Recipe({ _id: id, name: name, ingredients: ingredients, directions: directions });
-
-	  newRecipe.save( (err, data) => {
-	    if (err) {
-
-	      return callback('error: '+err);
-	    };
-
-	    callback('added: '+data);
-	  });
-	});
+    callback('added: '+data);
+  });
 };
 
 exports.deleteFromDB = (data, callback) => {
@@ -116,7 +92,7 @@ exports.deleteFromDB = (data, callback) => {
 
       return callback('error: '+err);
     }
-    
+
     callback('recipe: deleted');
   })
 };

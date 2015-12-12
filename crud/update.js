@@ -1,5 +1,6 @@
 const db = require('../data/database_handler.js');
 const validate = require('../modules/validate.js');
+const account = require('../users/account_handler.js');
 
 exports.item = (recipeID, body, auth, callback) => {
   console.log('update');
@@ -9,10 +10,16 @@ exports.item = (recipeID, body, auth, callback) => {
     callback({code: 401, contentType:'application/json', response:{ status:'error', message:'missing basic auth' }});
   }
 
-  if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
+  var attempt = {username: auth.basic.username, password: auth.basic.password};
 
-    callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
-  }
+  account.login(attempt, data => {
+    console.log(data);
+    var response = data.split(':');
+
+    if (response[0] === 'error') {
+      return callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
+    };
+  });
 
   const json = JSON.parse(body);
   const valid = validate.json(json);
@@ -28,7 +35,7 @@ exports.item = (recipeID, body, auth, callback) => {
     const response = data.split(':');
     if (response[0] === 'added') {
 
-      return callback({code: 201, contentType:'application/json', response:{ status:'success', message:response[1]+' added', data: newRecipe }});
+      return callback({code: 201, contentType:'application/json', response:{ status:'success', message:response[1]+' updated', data: newRecipe }});
     } else {
 
       callback({code: 400, contentType:'application/json', response:{ status:'error', message:'error: ' + response[1] }});
