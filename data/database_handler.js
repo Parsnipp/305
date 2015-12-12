@@ -21,7 +21,7 @@ exports.getAllDB = callback => {
 	Recipe.find( (err, data) => {
     if (err) {
 
-      callback('error: '+err);
+      return callback('error: '+err);
     };
 
     callback(data);
@@ -32,7 +32,7 @@ exports.getByIdDB = (id, callback) => {
 	Recipe.find({_id: id}, (err, data) => {
     if (err) {
 
-      callback('error: '+err);
+      return callback('error: '+err);
     };
 
     const recipe = data.map( item => {
@@ -40,7 +40,7 @@ exports.getByIdDB = (id, callback) => {
       return {_id: item.id, name: item.name, ingredients: item.ingredients, directions: item.directions};
     });
 
-    callback(recipe);
+    callback('found: '+recipe);
   });
 };
 
@@ -48,10 +48,10 @@ exports.getByNameDB = (name, callback) => {
 	Recipe.find({name: name}, (err, data) => {
     if (err) {
 
-      callback('error: '+err);
+      return callback('error: '+err);
     };
 
-    callback(data);
+    callback('found: '+data);
   });
 };
 
@@ -67,11 +67,11 @@ exports.postDB = (data, callback) => {
   const directions = data.directions;
   
   const newRecipe = new Recipe({ _id: id, name: name, ingredients: ingredients, directions: directions });
-  console.log(newRecipe);
+
 	newRecipe.save( (err, newRecipe) => {
     if (err) {
 
-      callback('error: '+err);
+      return callback('error: '+err);
     };
 
     callback('added: '+data.name);
@@ -79,10 +79,10 @@ exports.postDB = (data, callback) => {
 };
 
 exports.putDB = (data, callback) => {
-	Recipe.remove({id: id}, err => {
+	Recipe.remove({_id: data.id}, err => {
     if (err) {
 
-      callback('error: '+err);
+      return callback('error: '+err);
     };
 
 		const id = data.id;
@@ -100,7 +100,7 @@ exports.putDB = (data, callback) => {
 	  newRecipe.save( (err, data) => {
 	    if (err) {
 
-	      callback('error: '+err);
+	      return callback('error: '+err);
 	    };
 
 	    callback('added: '+data);
@@ -109,12 +109,14 @@ exports.putDB = (data, callback) => {
 };
 
 exports.deleteFromDB = (data, callback) => {
-	Recipe.remove({_id: id}, err => {
+	console.log('deleteID: '+data);
+
+	Recipe.remove({_id: data}, (err, result) => {
     if (err) {
 
-      callback('error: '+err);
-    };
-
-    callback('recipe deleted');
-  });
+      return callback('error: '+err);
+    }
+    
+    callback('recipe: deleted');
+  })
 };
