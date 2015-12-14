@@ -1,12 +1,5 @@
 /*istanbul ignore next*/
 const mongoose = require('./accounts_connect.js');
-// const database = 'accounts';
-
-// const server = 'mongodb://localhost/'+database;
-
-// console.log(server);
-// const db = mongoose.createConnection(server);
-// //const db = mongoose.connection;
 
 const accountSchema = new mongoose.Schema({
 	_id: { type: String, required: true },

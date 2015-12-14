@@ -12,7 +12,6 @@ exports.byID = (recipeID, auth, callback) => {
   var attempt = {username: auth.basic.username, password: auth.basic.password};
 
   account.login(attempt, data => {
-    console.log(data);
     var response = data.split(':');
 
     if (response[0] === 'error') {

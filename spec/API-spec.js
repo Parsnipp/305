@@ -78,6 +78,13 @@ describe('Recipes', done => {
 		});
 	});
 
+	it('should get a single recipe from third party API', done => {
+		remote.single('localhost:8080', 'Lasagna-1422375', expectation => {
+			expect(expectation.code).toEqual(200);
+			done();
+		});
+	});
+
 	it('should update the user account', done => {
 		const user = {username: 'testuser', password: 'password'};
 		account.update(user, expectation => {

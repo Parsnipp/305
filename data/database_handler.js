@@ -2,12 +2,6 @@
 var mongoose = require('./recipes_connect.js');
 var database = 'recipes';
 
-// const server = 'mongodb://localhost/'+database;
-
-// console.log(server);
-// mongoose.connect(server);
-// const db = mongoose.connection;
-
 const recipeSchema = new mongoose.Schema({
 	_id: { type: String, required: true },
   name: { type: String },
@@ -68,7 +62,7 @@ exports.postDB = (data, callback) => {
 
       return callback('error: '+err);
     };
-
+    
     callback('added: '+data.name);
   });
 };
