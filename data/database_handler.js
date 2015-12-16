@@ -73,7 +73,7 @@ exports.putDB = (data, callback) => {
 
       return callback('error: '+err);
     };
-
+    console.log('did it in db')
     callback('added: '+data);
   });
 };

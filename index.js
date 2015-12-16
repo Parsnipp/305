@@ -93,8 +93,9 @@ server.put('/recipes/:recipeID', (req, res) => {
   console.log('updating a recipe');
 
   const recipeID = req.params.recipeID;
+  const body = req.body;
   const auth = req.authorization;
-  update.item(recipeID, auth, data => {
+  update.item(recipeID, body, auth, data => {
 	  console.log(data);
 
 	  res.setHeader('content-type', data.contentType);

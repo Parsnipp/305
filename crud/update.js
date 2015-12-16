@@ -6,7 +6,7 @@ exports.item = (recipeID, body, auth, callback) => {
   console.log('update');
 
   if (auth.basic === undefined) {
-
+    console.log('hes dead jim')
     callback({code: 401, contentType:'application/json', response:{ status:'error', message:'missing basic auth' }});
   }
 
@@ -14,7 +14,7 @@ exports.item = (recipeID, body, auth, callback) => {
 
   account.login(attempt, data => {
     var response = data.split(':');
-
+    console.log(data);
     if (response[0] === 'error') {
       return callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
     };
@@ -33,7 +33,7 @@ exports.item = (recipeID, body, auth, callback) => {
   db.putDB(newRecipe, data => {
     const response = data.split(':');
     if (response[0] === 'added') {
-
+      console.log('did it in update')
       return callback({code: 201, contentType:'application/json', response:{ status:'success', message:response[1]+' updated', data: newRecipe }});
     } else {
 
