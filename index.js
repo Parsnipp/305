@@ -16,28 +16,6 @@ server.get('/', (req, res, next) => {
   res.redirect('/recipes', next);
 });
 
-server.get('/recipes/search/:name', (req, res) => {
-	console.log('getting recipes by name');
-
-	const name = req.params.name;
-	const host = req.headers.host;
-	remote.search(host, name, data => {
-
-		res.setHeader('content-type', 'application/json');
-	  res.send(data.code, data.response);
-	  res.end();
-  });
-});
-
-server.get('/recipes/remote/:recipeID', (req, res) => {
-	remote.single(host, id, data => {
-
-		res.setHeader('content-type', 'application/json');
-	  res.send(data.code, data.response);
-	  res.end();
-	});
-});
-
 server.get('/recipes', (req, res) => {
   console.log('getting a list of all recipes');
 
@@ -58,6 +36,30 @@ server.get('/recipes', (req, res) => {
 		  res.end();
     });
   }
+});
+
+server.get('/recipes/search/:name', (req, res) => {
+	console.log('getting recipes by name');
+
+	const name = req.params.name;
+	const host = req.headers.host;
+	remote.search(host, name, data => {
+
+		res.setHeader('content-type', 'application/json');
+	  res.send(data.code, data.response);
+	  res.end();
+  });
+});
+
+server.get('/recipes/remote/:recipeID', (req, res) => {
+	const id = req.params.recipeID;
+	const host = req.headers.host;
+	remote.single(host, id, data => {
+
+		res.setHeader('content-type', 'application/json');
+	  res.send(data.code, data.response);
+	  res.end();
+	});
 });
 
 server.get('/recipes/:recipeID', (req, res) => {
@@ -114,6 +116,7 @@ server.del('/recipes/:recipeID', (req, res) => {
 });
 
 server.get('/user', (req, res) => {
+	console.log('login attempt');
 	const auth = req.authorization;
 	const details = { username: auth.basic.username, password: auth.basic.password};
 	account.login(details, data => {

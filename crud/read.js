@@ -10,8 +10,9 @@ exports.byID = (recipeID, callback) => {
 
       return callback({code:406, response:{status:'error', contentType:'application/json', message:'recipe not found', data: recipeID}});
     } else {
+      var json = data.slice(7);
 
-      callback({code:200, response:{status:'success', contentType:'application/json', message:'recipe found', data: response[1]}});
+      callback({code:200, response:{status:'success', contentType:'application/json', message:'recipe found', data: json}});
     }
   });
 }

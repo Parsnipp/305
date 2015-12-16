@@ -30,7 +30,7 @@ exports.new = (auth, body, callback) => {
   }
 
   const newId = rand(160, 36);
-  const newRecipe = {id: newId, name:  json.name, ingredients: json.ingredients, directions: json.directions};
+  const newRecipe = {_id: newId, name:  json.name, ingredients: json.ingredients, directions: json.directions};
 
   db.postDB(newRecipe, data => {
     const response = data.split(':');

@@ -34,7 +34,7 @@ exports.getByIdDB = (id, callback) => {
       return {_id: item.id, name: item.name, ingredients: item.ingredients, directions: item.directions};
     });
 
-    callback('found: '+recipe);
+    callback('found: '+JSON.stringify(recipe));
   });
 };
 
@@ -55,7 +55,7 @@ exports.postDB = (data, callback) => {
     return item.trim();
   });
   
-  var newRecipe = new Recipe({ _id: data.id, name: data.name, ingredients: ingredients, directions: data.directions });
+  var newRecipe = new Recipe({ _id: data._id, name: data.name, ingredients: ingredients, directions: data.directions });
 
 	newRecipe.save( (err, newRecipe) => {
     if (err) {
