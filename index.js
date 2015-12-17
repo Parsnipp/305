@@ -154,6 +154,7 @@ server.post('/user', (req, res) => {
 });
 
 server.put('/user', (req, res) => {
+	console.log('updating: '+req.authorization.basic.username);
 	const auth = req.authorization;
 	const details = { username: auth.basic.username, password: auth.basic.password};
 	account.update(details, data => {

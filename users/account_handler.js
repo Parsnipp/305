@@ -35,8 +35,9 @@ exports.login = (data, callback) => {
 };
 
 exports.update = (data, callback) => {
-	Account.update({_id: data.username, password: data.password}, err => {
+	Account.update({_id: data.username}, {password: data.password}, { upsert: true }, err => {
 		if (err) {
+			console.log(err);
 			return callback('error: '+err);
 		};
 
