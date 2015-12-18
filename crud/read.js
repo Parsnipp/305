@@ -37,7 +37,7 @@ exports.all = (host, callback) => {
     //if something was found separate the recipes
     var json = JSON.parse(json);
     var recipe = json.map(function(item) {
-      return {id: item._id, name: item.name, ingredients: item.ingredients, link: 'http://'+host+'/recipes/'+item.id};
+      return {id: item._id, name: item.name, ingredients: item.ingredients, link: 'http://'+host+'/recipes/'+item._id};
     });
     //callback with recipes
     callback({code:200, contentType:'application/json', response:{status:'success', message:recipe.length+' recipes found', data: recipe}});
