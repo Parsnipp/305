@@ -21,6 +21,7 @@ exports.new = (auth, body, callback) => {
     var response = data.split(':');
     //if authentication failed callback invalid credentials
     if (response[0] === 'error') {
+      console.log('nope')
       return callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
     };
   });

@@ -14,7 +14,7 @@ exports.item = (recipeID, body, auth, callback) => {
   //create authentication variable
   var attempt = {username: auth.basic.username, password: auth.basic.password};
   //verify authentication
-  account.login(attempt, data => {
+    account.login(attempt, data => {
     var response = data.split(':');
     //check if authentication is valid
     if (response[0] === 'error') {

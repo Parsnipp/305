@@ -13,14 +13,14 @@ exports.byID = (recipeID, auth, callback) => {
   //create authentication variable
   var attempt = {username: auth.basic.username, password: auth.basic.password};
   //verify authentication
-  account.login(attempt, data => {
+    account.login(attempt, data => {
     var response = data.split(':');
     //check if authentication is valid
     if (response[0] === 'error') {
       //if not valid callback invalid credentials
       return callback({code: 401, contentType:'application/json', response:{ status:'error', message:'invalid credentials' }});
     };
-  });
+  })
   //database delete function
   db.deleteFromDB(recipeID, data => {
     var response = data.split(':');

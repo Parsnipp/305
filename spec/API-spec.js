@@ -8,15 +8,32 @@ const account = require('../users/account_handler.js');
 
 describe('Recipes', done => {
 	it('should create a user account', done => {
-		const user = {username: 'testuser', password: 'p455w0rd'};
+		const user = {username: 'testuser2', password: 'p455w0rd'};
 		account.create(user, expectation => {
-			expect(expectation).toBe('added: account testuser');
+			expect(expectation).toBe('added: account testuser2');
+			done();
+		});
+	});
+
+
+	it('should update the user account', done => {
+		const user = {username: 'testuser2', password: 'password'};
+		account.update(user, expectation => {
+			expect(expectation).toBe('updated: testuser2');
+			done();
+		});
+	});
+
+	it('should delete the user account', done => {
+		const user = {username: 'testuser2', password: 'password'};
+		account.delete(user, expectation => {
+			expect(expectation).toBe('deleted: testuser2');
 			done();
 		});
 	});
 
 	it('should add a recipe to the "database"', done => {
-		const auth = {basic : {username: 'testuser', password: 'p455w0rd'}};
+		const auth = {basic : {username: 'testuser', password: 'password'}};
 		const recipeAdd = '{"name": "curry", "ingredients": ["chicken", "pasata", "curry paste", "rice"], "directions": "Cook chicken, add curry paste and pasata while cooking rice."}';
 		create.new(auth, recipeAdd, expectation => {
 			expect(expectation.code).toEqual(201);
@@ -39,9 +56,10 @@ describe('Recipes', done => {
 	});
 
 	it('should update the recipe in the list', done => {
-		const auth = {basic : {username: 'testuser', password: 'p455w0rd'}};
+		const auth = {basic : {username: 'testuser', password: 'password'}};
 		read.all('localhost:8080', items => {
-			const itemID = items.response.data[0]._id;
+			console.log(items.response.data[0].id);
+			const itemID = items.response.data[0].id;
 			const body = '{"name": "chilli", "ingredients": ["mince", "pasata", "chilli powder", "rice"], "directions": "Cook mince, add pasata and powder, simmer while cooking rice."}';
 			update.item(itemID, body, auth, expectation => {
 				expect(expectation.code).toEqual(201);
@@ -52,7 +70,7 @@ describe('Recipes', done => {
 
 	it("should get a recipe by it's ID", done => {
 		read.all('localhost:8080', items => {
-			const itemID = items.response.data[0]._id;
+			const itemID = items.response.data[0].id;
 			read.byID(itemID, expectation => {
 				expect(expectation.code).toEqual(200);
 				done();
@@ -61,7 +79,7 @@ describe('Recipes', done => {
 	});
 
 	it('should delete the recipe', done => {
-		const auth = {basic : {username: 'testuser', password: 'p455w0rd'}};
+		const auth = {basic : {username: 'testuser', password: 'password'}};
 		read.all('localhost:8080', items => {
 			const itemID = items.response.data[0]._id;
 			destroy.byID(itemID, auth, expectation => {
@@ -79,24 +97,8 @@ describe('Recipes', done => {
 	});
 
 	it('should get a single recipe from third party API', done => {
-		remote.single('localhost:8080', 'Lasagna-1422375', expectation => {
+		remote.single('localhost:8080', 'Pasta-Alfredo-1400011', expectation => {
 			expect(expectation.code).toEqual(200);
-			done();
-		});
-	});
-
-	it('should update the user account', done => {
-		const user = {username: 'testuser', password: 'password'};
-		account.update(user, expectation => {
-			expect(expectation).toBe('updated: testuser');
-			done();
-		});
-	});
-
-	it('should delete the user account', done => {
-		const user = {username: 'testuser', password: 'password'};
-		account.delete(user, expectation => {
-			expect(expectation).toBe('deleted: testuser');
 			done();
 		});
 	});

@@ -32,10 +32,15 @@ exports.all = (host, callback) => {
       //if not found callback nothing found
       return callback({code: 404, contentType:'application/json', response:{ status:'error', message:'no recipes found' }});
     };
+    //check if anything has been returned
+    if (response[1].length === 0) {
+       //if not found callback nothing found
+      return callback({code: 404, contentType:'application/json', response:{ status:'error', message:'no recipes found' }});
+    };
     //if found remove 'found: ' from start of message
     var json = data.slice(7);
     //if something was found separate the recipes
-    var json = JSON.parse(json);
+    json = JSON.parse(json);
     var recipe = json.map(function(item) {
       return {id: item._id, name: item.name, ingredients: item.ingredients, link: 'http://'+host+'/recipes/'+item._id};
     });
@@ -59,12 +64,15 @@ exports.allXML = (host, callback) => {
     } else {
       //if recipes were found create success message
       xml.ele('message', {status: 'success'}, 'recipes found');
+      //remove 'found: ' from response
+      data = data.slice(7);
+      data = JSON.parse(data);
       //create XML recipe list
       const xmlRecipes = xml.ele('recipes', {count: data.length});
       //iterate through the recipe list
       for(var i=0; i < data.length; i++) {
         //create a recipe for each item in the list
-        var recipe = xmlRecipes.ele('recipe', {id: data[i].id});
+        var recipe = xmlRecipes.ele('recipe', {id: data[i]._id});
         recipe.ele('name', data[i].name);
         recipe.ele('link', {href:'http://'+host+'/recipes/'+data[i].id});
       };
